@@ -16,6 +16,12 @@ Execute the main script directly with Python:
 python tic-tac-toe.py
 ```
 
+To see how the minimax player evaluates each move, run with the `--show-minimax` flag:
+
+```bash
+python tic-tac-toe.py --show-minimax
+```
+
 By default a human player faces the minimax player. When prompted, input moves in the format `A1`, `B2`, etc.
 
 ## Requirements

@@ -37,8 +37,9 @@ class HumanPlayer(object):
 
 class SimpleMinimaxPlayer(object):
 
-    def __init__(self, *, position):
+    def __init__(self, *, position, debug=False):
         self.position = position
+        self.debug = debug
 
     def play(self, *, board):
         # Minimax algorithm to choose the optimal move
@@ -46,19 +47,28 @@ class SimpleMinimaxPlayer(object):
         best_move = None
         available_moves = utils.get_available_moves(board)
 
+        if self.debug:
+            print("Evaluating moves:", available_moves)
+
         for row, col in available_moves:
             # Make the given move
             board.play_move(row=row, col=col)
             board.next_player()  # Switch player for minimax algorithm
-            score = self._minimax(board, is_maximizing=False)  # Calculate score using minimax algorithm
+            score = self._minimax(board, is_maximizing=False, depth=1)  # Calculate score using minimax algorithm
             board.board[col][row] = EMPTY_CELL  # Undo the move
             board.next_player()  # Switch back to the original player
+            if self.debug:
+                print(f"Move {(row, col)} -> score {score}")
             if score > best_score:
                 best_score = score
                 best_move = (row, col)
+
+        if self.debug:
+            print(f"Selected move {best_move} with score {best_score}")
+
         return best_move
 
-    def _minimax(self, board, is_maximizing):
+    def _minimax(self, board, is_maximizing, depth):
         # Check if the game has ended
         game_ended, there_is_winner = board.game_has_ended()
         if game_ended:
@@ -73,9 +83,13 @@ class SimpleMinimaxPlayer(object):
             # Make the given move
             board.play_move(row=row, col=col)
             board.next_player()  # Switch player for minimax algorithm
-            score = self._minimax(board, not is_maximizing)  # Calculate score using minimax algorithm
+            score = self._minimax(board, not is_maximizing, depth + 1)  # Calculate score using minimax algorithm
             board.board[col][row] = EMPTY_CELL  # Undo the move
             board.next_player()  # Switch back to the original player
+            if self.debug:
+                indent = '  ' * depth
+                role = 'Max' if is_maximizing else 'Min'
+                print(f"{indent}{role} evaluating move {(row, col)} -> {score}")
             if is_maximizing:
                 best_score = max(score, best_score)
             else:
