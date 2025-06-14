@@ -1,3 +1,5 @@
+"""Utility helpers for working with Tic-Tac-Toe boards."""
+
 from board import EMPTY_CELL
 
 
