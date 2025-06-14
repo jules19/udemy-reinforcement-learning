@@ -1,6 +1,7 @@
 import random
 from board import PLAYER_ONE, PLAYER_TWO, EMPTY_CELL
 import utils
+import time
 
 
 class RandomPlayer(object):
@@ -42,10 +43,12 @@ class SimpleMinimaxPlayer(object):
         self.debug = debug
 
     def play(self, *, board):
+
         # Minimax algorithm to choose the optimal move
         best_score = float('-inf')
         best_move = None
         available_moves = utils.get_available_moves(board)
+        random.shuffle(available_moves)  # Shuffle moves to add some randomness
 
         if self.debug:
             print("Evaluating moves:", available_moves)
@@ -66,6 +69,7 @@ class SimpleMinimaxPlayer(object):
         if self.debug:
             print(f"Selected move {best_move} with score {best_score}")
 
+
         return best_move
 
     def _minimax(self, board, is_maximizing, depth):
@@ -77,7 +81,8 @@ class SimpleMinimaxPlayer(object):
             return 0
 
         available_moves = utils.get_available_moves(board)
-
+        random.shuffle(available_moves)  # Shuffle moves to add some randomness
+        
         best_score = float('-inf') if is_maximizing else float('inf')
         for row, col in available_moves:
             # Make the given move
@@ -95,3 +100,66 @@ class SimpleMinimaxPlayer(object):
             else:
                 best_score = min(score, best_score)
         return best_score
+    
+
+class DynamicProgrammingPlayer(object):
+
+    def __init__(self, *, position):
+        self.position = position
+        self.state_values = {}
+
+    def play(self, *, board):
+
+        # Use dynamic programming to choose the optimal move
+        best_score = float('-inf')
+        best_move = None
+        available_moves = utils.get_available_moves(board)
+        random.shuffle(available_moves)  # Shuffle moves to add some randomness
+
+        for row, col in available_moves:
+            # Make the given move
+            board.play_move(row=row, col=col)
+            board.next_player()  # Switch player for minimax algorithm
+            score = self._minimax_cached(board, is_maximizing=False)  # Calculate score using minimax algorithm
+            board.board[col][row] = EMPTY_CELL  # Undo the move
+            board.next_player()  # Switch back to the original player
+            if score > best_score:
+                best_score = score
+                best_move = (row, col)
+
+        return best_move
+    
+    def _minimax_cached(self, board, is_maximizing):
+        state_key = repr(board)
+        if state_key not in self.state_values:
+            # Check if the game has ended
+            game_ended, there_is_winner = board.game_has_ended()
+            if game_ended:
+                if there_is_winner:
+                    best_score = 1 if not is_maximizing else -1
+                else:
+                    best_score = 0
+            else:
+                available_moves = utils.get_available_moves(board)
+                random.shuffle(available_moves)  # Shuffle moves to add some randomness
+
+                best_score = float('-inf') if is_maximizing else float('inf')
+                for row, col in available_moves:
+                    # Make the given move
+                    board.play_move(row=row, col=col)
+                    board.next_player()  # Switch player for minimax algorithm
+                    score = self._minimax_cached(board, not is_maximizing)  # Calculate score using minimax algorithm
+                    board.board[col][row] = EMPTY_CELL  # Undo the move
+                    board.next_player()  # Switch back to the original player
+                    
+                    if is_maximizing:
+                        best_score = max(score, best_score)
+                    else:
+                        best_score = min(score, best_score)
+            
+            # Update state value dictionary
+            self.state_values[state_key] = best_score
+
+        return self.state_values[state_key]
+
+
