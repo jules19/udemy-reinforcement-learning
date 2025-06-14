@@ -1,7 +1,7 @@
 """Collection of player strategies for the Tic-Tac-Toe game."""
 
 import random
-from board import PLAYER_ONE, PLAYER_TWO, EMPTY_CELL
+from board import EMPTY_CELL
 import utils
 import time
 
