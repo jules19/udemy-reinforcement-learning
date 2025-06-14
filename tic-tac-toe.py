@@ -1,3 +1,5 @@
+"""Command line interface to play Tic-Tac-Toe with different player types."""
+
 import argparse
 from board import Board, PLAYER_ONE, PLAYER_TWO
 from players import HumanPlayer, RandomPlayer, SimpleMinimaxPlayer, DynamicProgrammingPlayer
@@ -11,6 +13,7 @@ _player_categories = {
 
 
 class TicTacToe(object):
+    """High level game controller managing turns and player interaction."""
 
     def __init__(self, *, player_one, player_two, display_board=True, debug_minimax=False):
         self.board = Board(rows=3, cols=3, connections_to_win=3)

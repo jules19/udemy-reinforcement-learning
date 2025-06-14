@@ -1,3 +1,5 @@
+"""Board implementation for the console Tic-Tac-Toe game."""
+
 PLAYER_ONE = 1
 PLAYER_TWO = 2
 EMPTY_CELL = 0
@@ -9,6 +11,7 @@ STR_MAPPING = {
 
 
 class Board(object):
+    """Represents the game board and handles move logic and win detection."""
 
     def __init__(self, *, rows, cols, connections_to_win, board=None, player_to_move=PLAYER_ONE):
         self.rows = rows

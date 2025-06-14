@@ -1,3 +1,5 @@
+"""Collection of player strategies for the Tic-Tac-Toe game."""
+
 import random
 from board import PLAYER_ONE, PLAYER_TWO, EMPTY_CELL
 import utils
@@ -5,6 +7,7 @@ import time
 
 
 class RandomPlayer(object):
+    """Player that selects moves uniformly at random."""
 
     def __init__(self, *, position):
         self.position = position
@@ -16,6 +19,7 @@ class RandomPlayer(object):
 
 
 class HumanPlayer(object):
+    """Interactive player that prompts a user for each move."""
 
     def __init__(self, *, position):
         self.position = position
@@ -37,6 +41,7 @@ class HumanPlayer(object):
 
 
 class SimpleMinimaxPlayer(object):
+    """Player that uses a depth-first minimax search to select moves."""
 
     def __init__(self, *, position, debug=False):
         self.position = position
@@ -103,6 +108,7 @@ class SimpleMinimaxPlayer(object):
     
 
 class DynamicProgrammingPlayer(object):
+    """Minimax player with memoization of board states."""
 
     def __init__(self, *, position):
         self.position = position
