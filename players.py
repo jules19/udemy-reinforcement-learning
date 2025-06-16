@@ -4,7 +4,6 @@ from copy import deepcopy
 import random
 from board import Board, EMPTY_CELL
 import utils
-import time
 
 
 class RandomPlayer(object):
@@ -215,9 +214,9 @@ class MonteCarloPlayer(object):
         opponents_move = True
         
         while True:
-            available_moves = utils.get_available_moves(board)
+            available_moves = utils.get_available_moves(new_board)
 
-            random_move = random.choice(available_moves) # Pick a move at random
+            random_move = random.choice(available_moves)  # Pick a move at random
             new_board.play_move(row=random_move[0], col=random_move[1])
             new_board.next_player()
 
@@ -227,6 +226,5 @@ class MonteCarloPlayer(object):
             if game_ended:
                 if there_is_winner:
                     return 1 if opponents_move else -1
-                return 0 # Draw
-        return 0
+                return 0  # Draw
                 
