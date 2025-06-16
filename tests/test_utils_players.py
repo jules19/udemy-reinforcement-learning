@@ -5,7 +5,7 @@ import random
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from board import Board, PLAYER_ONE, PLAYER_TWO, EMPTY_CELL
-from players import RandomPlayer, SimpleMinimaxPlayer
+from players import RandomPlayer, SimpleMinimaxPlayer, MonteCarloPlayer
 import utils
 
 
@@ -44,5 +44,21 @@ def test_simple_minimax_player_finds_winning_move():
     board.current_player = PLAYER_ONE
 
     player = SimpleMinimaxPlayer(position=PLAYER_ONE)
+    winning_move = player.play(board=board)
+    assert winning_move == (0, 2)
+
+
+def test_monte_carlo_player_finds_winning_move():
+    board = Board(rows=3, cols=3, connections_to_win=3)
+    state = [
+        [PLAYER_ONE, PLAYER_ONE, EMPTY_CELL],
+        [PLAYER_TWO, PLAYER_TWO, EMPTY_CELL],
+        [EMPTY_CELL, EMPTY_CELL, EMPTY_CELL],
+    ]
+    set_board_state(board, state)
+    board.current_player = PLAYER_ONE
+
+    random.seed(0)
+    player = MonteCarloPlayer(position=PLAYER_ONE, num_simulations=50)
     winning_move = player.play(board=board)
     assert winning_move == (0, 2)
