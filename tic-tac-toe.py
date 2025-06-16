@@ -2,13 +2,14 @@
 
 import argparse
 from board import Board, PLAYER_ONE, PLAYER_TWO
-from players import HumanPlayer, RandomPlayer, SimpleMinimaxPlayer, DynamicProgrammingPlayer
+from players import HumanPlayer, RandomPlayer, SimpleMinimaxPlayer, DynamicProgrammingPlayer, MonteCarloPlayer
 
 _player_categories = {
     'human_user': HumanPlayer,
     'random_player': RandomPlayer,
     'minimax_player': SimpleMinimaxPlayer,
     'dp_player': DynamicProgrammingPlayer,
+    'mc_player': MonteCarloPlayer,
 }
 
 
@@ -50,7 +51,7 @@ class TicTacToe(object):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Play Tic-Tac-Toe')
     parser.add_argument('--player-one', choices=_player_categories.keys(), default='human_user')
-    parser.add_argument('--player-two', choices=_player_categories.keys(), default='dp_player')
+    parser.add_argument('--player-two', choices=_player_categories.keys(), default='mc_player')
     parser.add_argument('--show-minimax', action='store_true', help='Display minimax evaluation steps')
     args = parser.parse_args()
     game = TicTacToe(player_one=args.player_one,

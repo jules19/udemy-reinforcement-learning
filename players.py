@@ -1,7 +1,8 @@
 """Collection of player strategies for the Tic-Tac-Toe game."""
 
+from copy import deepcopy
 import random
-from board import EMPTY_CELL
+from board import Board, EMPTY_CELL
 import utils
 import time
 
@@ -168,4 +169,64 @@ class DynamicProgrammingPlayer(object):
 
         return self.state_values[state_key]
 
+class MonteCarloPlayer(object):
+    def __init__(self, *, position, num_simulations = 5000):
+        self.position = position
+        self.num_simulations = num_simulations
 
+    def play(self, *, board):
+        # Monte Carlo simulation to choose the best move
+        best_move = None
+        best_win_rate = float('-inf')
+        available_moves = utils.get_available_moves(board)
+
+        for row, col in available_moves:
+            wins = 0
+            board.play_move(row=row, col=col)
+            board.next_player()
+
+            game_ended, there_is_winner = board.game_has_ended()
+            if game_ended:
+                if there_is_winner:
+                    board.board[col][row] = EMPTY_CELL # Undo the move
+                    board.next_player() # Switch back to orginal player
+                    return row, col
+                if best_move is None:
+                    best_move = (row, col)
+            else:
+                # Run simulations to estimate the win rate
+                for _ in range(self.num_simulations):
+                    wins += self._simulate_game(board)
+
+                win_rate = wins / self.num_simulations
+                if win_rate > best_win_rate:
+                    best_win_rate = win_rate
+                    best_move = (row, col)
+
+            board.board[col][row] = EMPTY_CELL # Undo the move
+            board.next_player() # Switch back to orginal player
+
+        return best_move
+
+    def _simulate_game(self, board):
+        # Simulate a random game starting with a specific board configuration
+        new_board = Board(rows=board.rows, cols=board.cols, connections_to_win=board.connections_to_win, 
+                            board=deepcopy(board.board), player_to_move=board.current_player)
+        opponents_move = True
+        
+        while True:
+            available_moves = utils.get_available_moves(board)
+
+            random_move = random.choice(available_moves) # Pick a move at random
+            new_board.play_move(row=random_move[0], col=random_move[1])
+            new_board.next_player()
+
+            game_ended, there_is_winner = new_board.game_has_ended()
+            opponents_move = not opponents_move
+
+            if game_ended:
+                if there_is_winner:
+                    return 1 if opponents_move else -1
+                return 0 # Draw
+        return 0
+                

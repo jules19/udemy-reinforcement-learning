@@ -44,7 +44,6 @@ class Board(object):
         self.current_player = PLAYER_ONE if self.current_player == PLAYER_TWO else PLAYER_TWO
 
     def play_move(self, *, row, col):
-        assert self.board[col][row] == EMPTY_CELL, f"The cell {row, col} is not empty."
         self.board[col][row] = self.current_player
 
     def game_has_ended(self):
